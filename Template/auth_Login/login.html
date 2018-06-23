@@ -1,0 +1,155 @@
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Login</title>
+  <link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700'>
+  <link rel="stylesheet" type="text/css" href="{% static 'assets/skin/default_skin/css/theme.css' %}">
+  <link rel="shortcut icon" href="{% static 'assets/img/favicon.ico' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'assets/admin-tools/admin-forms/css/admin-forms.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'vendor/plugins/sweetalert2/sweetalert2.min.css' %}">
+
+</head>
+<body class="external-page sb-l-c sb-r-c">
+  <div id="main" class="animated fadeIn">
+    <section id="content_wrapper">
+      <div id="canvas-wrapper">
+        <canvas id="demo-canvas"></canvas>
+      </div>
+      <section id="content">
+        <div class="admin-form theme-info">
+          <div class="row mb15 table-layout">
+            <div class="col-xs-6 va-m pln">
+              <a href="" title="Return to Dashboard">
+                <img src="{% static 'assets/img/logos/logo_white.png' %}" title="AdminDesigns Logo" class="img-responsive w250">
+              </a>
+            </div>
+            <div class="col-xs-6 text-right va-b pr5">
+              <div class="login-links">
+                <a href="#" class="active" title="Sign In">Entrar</a>
+                <span class="text-white"> | </span>
+                <a href="#" class="" title="Register">Registrarse</a>
+              </div>
+            </div>
+          </div>
+          <div class="panel panel-info mt10 br-n">
+            <div class="panel-body bg-light p30">
+              <div class="row">
+                <div class="col-sm-7 pr30">
+                  <div class="section">
+                    <label for="user" class="field-label text-muted fs18 mb10">Usuario</label>
+                    <label for="user" class="field prepend-icon">
+                      <input type="text" id="user" class="gui-input" placeholder="Ingrese su usuario">
+                      <label for="user" class="field-icon">
+                        <i class="fa fa-user m15"></i>
+                      </label>
+                    </label>
+                  </div>
+                  <div class="section">
+                    <label for="pass" class="field-label text-muted fs18 mb10">Contraseña</label>
+                    <label for="pass" class="field prepend-icon">
+                      <input type="password" id="pass" class="gui-input" placeholder="Ingrese su contraseña">
+                      <label for="pass" class="field-icon">
+                        <i class="fa fa-lock m15"></i>
+                      </label>
+                    </label>
+                  </div>
+                </div>
+                <div class="col-sm-5 br-l br-grey pl30">
+                  <h3 class="mb25"> You'll Have Access To Your:</h3>
+                  <p class="mb15">
+                    <span class="fa fa-check text-success pr5"></span> Unlimited Email Storage</p>
+                  <p class="mb15">
+                    <span class="fa fa-check text-success pr5"></span> Unlimited Photo Sharing/Storage</p>
+                  <p class="mb15">
+                    <span class="fa fa-check text-success pr5"></span> Unlimited Downloads</p>
+                  <p class="mb15">
+                    <span class="fa fa-check text-success pr5"></span> Unlimited Service Tickets</p>
+                </div>
+              </div>
+            </div>
+            <div class="panel-footer clearfix p10 ph15">
+              <button type="button" id="sign-in" class="btn btn-primary mr10 pull-right">Entrar</button>
+              <label class="switch ib switch-primary pull-left input-align mt10">
+                <input type="checkbox" id="remember" checked>
+                <label for="remember" data-on="YES" data-off="NO"></label>
+                <span>Remember me</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </div>
+
+  <!-- jQuery -->
+  <script src="{% static 'vendor/jquery/jquery-1.11.1.min.js' %}"></script>
+  <script src="{% static 'vendor/jquery/jquery_ui/jquery-ui.min.js' %}"></script>
+
+  <!-- CanvasBG Plugin(creates mousehover effect) -->
+  <script src="{% static 'vendor/plugins/canvasbg/canvasbg.js' %}"></script>
+
+  <!-- Theme Javascript -->
+  <script src="{% static 'assets/js/utility/utility.js' %}"></script>
+  <script src="{% static 'assets/js/demo/demo.js' %}"></script>
+  <script src="{% static 'assets/js/main.js' %}"></script>
+
+  <script src="{% static 'vendor/plugins/sweetalert2/sweetalert2.min.js' %}"></script>
+
+  <!-- Page Javascript -->
+  <script type="text/javascript">
+    jQuery(document).ready(function() {
+
+      "use strict";
+      Core.init();
+      CanvasBG.init({
+        Loc: {
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 3.3
+        },
+      });
+
+    });
+    $(document).ready(function(){
+      function logeo(){
+        $.ajax({
+          url: '#',
+          type: 'POST',
+          data: {
+            'user': $("#user").val(),
+            'pass': $("#pass").val(),
+            'csrfmiddlewaretoken': '{{ csrf_token}}'
+          },
+          success: function(data){
+            if (data.result){
+              window.location.href = "#}"
+            }else{
+              swal({
+                title: 'Oops...',
+                text: 'Username y/o contraseña incorrecta',
+                type: 'error'
+              })
+            }
+          },
+          error: function(){
+            alert('error')
+          }
+        });
+      }
+      $("#sign-in").on('click', function(){
+        logeo()
+      });
+      $(document).keyup(function(e){
+        if(e.keyCode == 13){
+          logeo()
+        }
+      });
+      
+    });
+
+  </script>
+
+  </body>
+</html>

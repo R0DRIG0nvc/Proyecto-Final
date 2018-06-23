@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+      <!-- Meta, title, CSS, favicons, etc. -->
+      <meta charset="utf-8">
+      <title>{% block Title %}Inicio{% endblock Title %}</title>
+      <meta name="keywords" content="HTML5 Bootstrap 3 Admin Template UI Theme" />
+      <meta name="description" content="AdminDesigns - A Responsive HTML5 Admin UI Framework">
+      <meta name="author" content="AdminDesigns">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <!-- Font CSS (Via CDN) -->
+      <link rel='stylesheet' type='text/css' href="{% static 'assets/css.css' %}">
+      <!-- Theme CSS -->
+      <link rel="stylesheet" type="text/css" href="{% static 'assets/skin/default_skin/css/theme.css' %}">
+      <!-- Favicon -->
+      <link rel="shortcut icon" href="{% static 'assets/img/favicon.ico' %}">
+      {% block Styles %}
+      {% endblock Styles %}
+    </head>
+    {% block Body %}
+    <body class="dashboard-page sb-l-o sb-r-c">
+    {% endblock Body %}
+      <!-- Start: Main -->
+      <div id="main">
+        <!-- Start: Header -->
+        <header class="navbar navbar-fixed-top">
+            {% include "Partials/_Header.html" %}
+        </header>
+        <!-- End: Header -->
+        <!-- Start: Sidebar Left -->
+        <aside id="sidebar_left" class="nano nano-primary affix">
+            <!-- Start: Sidebar Left Content -->
+            <div class="sidebar-left-content nano-content">
+                {% include "Partials/_SidebarHeader.html" %}
+                {% include "Partials/_SidebarLeft.html" %}
+            </div>
+            <!-- End: Sidebar Left Content -->
+        </aside>
+        <!-- End: Sidebar Left -->
+        <!-- Start: Content-Wrapper -->
+        <section id="content_wrapper">
+          <!-- Start: Topbar-Dropdown -->
+          <div id="topbar-dropmenu">
+            <div class="topbar-menu row">
+              <div class="col-xs-4 col-sm-2">
+                <a href="#" class="metro-tile">
+                  <span class="glyphicon glyphicon-inbox"></span>
+                  <span class="metro-title">Messages</span>
+                </a>
+              </div>
+              <div class="col-xs-4 col-sm-2">
+                <a href="#" class="metro-tile">
+                  <span class="glyphicon glyphicon-user"></span>
+                  <span class="metro-title">Users</span>
+                </a>
+              </div>
+              <div class="col-xs-4 col-sm-2">
+                <a href="#" class="metro-tile">
+                  <span class="glyphicon glyphicon-headphones"></span>
+                  <span class="metro-title">Support</span>
+                </a>
+              </div>
+              <div class="col-xs-4 col-sm-2">
+                <a href="#" class="metro-tile">
+                  <span class="fa fa-gears"></span>
+                  <span class="metro-title">Settings</span>
+                </a>
+              </div>
+              <div class="col-xs-4 col-sm-2">
+                <a href="#" class="metro-tile">
+                  <span class="glyphicon glyphicon-facetime-video"></span>
+                  <span class="metro-title">Videos</span>
+                </a>
+              </div>
+              <div class="col-xs-4 col-sm-2">
+                <a href="#" class="metro-tile">
+                  <span class="glyphicon glyphicon-picture"></span>
+                  <span class="metro-title">Pictures</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <!-- End: Topbar-Dropdown -->
+          <!-- Start: Topbar -->
+          <header id="topbar">
+            <div class="topbar-left">
+                {% block TitleMenu %}
+                {% endblock TitleMenu %}
+            </div>
+            <div class="topbar-right">
+              <div class="ib topbar-dropdown">
+                <label for="topbar-multiple" class="control-label pr10 fs11 text-muted">Reporting Period</label>
+              </div>
+              <div class="ml15 ib va-m" id="toggle_sidemenu_r">
+                <a href="#" class="pl5">
+                  <i class="fa fa-sign-in fs22 text-primary"></i>
+                  <span class="badge badge-danger badge-hero">3</span>
+                </a>
+              </div>
+            </div>
+          </header>
+          <!-- End: Topbar -->
+          <!-- Begin: Content -->
+          <section id="content" class="animated fadeIn">
+            <!-- <div class="admin-panels"> -->
+                {% block Content %}
+                {% endblock Content %}
+            <!-- </div> -->
+          </section>
+          <!-- End: Content -->
+          <!-- Begin: Page Footer -->
+          <footer id="content-footer">
+              {% include "Partials/_Footer.html" %}
+          </footer>
+          <!-- End: Page Footer -->
+        </section>
+        <!-- End: Content-Wrapper -->
+
+        <!-- Start: Right Sidebar -->
+        <aside id="sidebar_right" class="nano affix">
+          <!-- Start: Sidebar Right Content -->
+            <div class="sidebar-right-content nano-content">
+                {% include "Partials/_SidebarRight.html" %}
+            </div>
+        </aside>
+        <!-- End: Right Sidebar -->
+      </div>
+      <!-- End: Main -->
+      <!-- BEGIN: PAGE SCRIPTS -->
+      <!-- jQuery -->
+      <script src="{% static 'vendor/jquery/jquery-1.11.1.min.js' %}"></script>
+      <script src="{% static 'vendor/jquery/jquery_ui/jquery-ui.min.js' %}"></script>
+      <!-- Theme Javascript -->
+      <script src="{% static 'assets/js/utility/utility.js' %}"></script>
+      <script src="{% static 'assets/js/demo/demo.js' %}"></script>
+      <script src="{% static 'assets/js/main.js' %}"></script>
+      <script src="{% static 'getCookie.js' %}"></script>
+      <script type="text/javascript">
+          jQuery(document).ready(function() {
+            "use strict";
+            Core.init();
+          });
+      </script>
+      {% block JavaScript %}
+      {% endblock JavaScript %}
+    </body>
+</html>

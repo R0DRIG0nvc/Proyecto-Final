@@ -1,0 +1,30 @@
+{% extends "Partials/_Base.html" %}
+{% load static %}
+{% block Title %}
+Inicio
+{% endblock Title %}
+{% block Styles %}
+{% endblock Styles %}
+{% block TitleMenu %}
+<ol class="breadcrumb">
+  <li class="crumb-active">
+    <a href="dashboard.html">Dashboard</a>
+  </li>
+  <li class="crumb-icon">
+    <a href="dashboard.html">
+      <span class="glyphicon glyphicon-home"></span>
+    </a>
+  </li>
+  <li class="crumb-link">
+    <a href="dashboard.html">Home</a>
+  </li>
+  <li class="crumb-trail">Dashboard</li>
+</ol>
+{% endblock TitleMenu %}
+{% block Content %}
+<div class="row text-center">
+    <h1>Plantilla de Base</h1>
+</div>
+{% endblock Content %}
+{% block JavaScript %}
+{% endblock JavaScript %}

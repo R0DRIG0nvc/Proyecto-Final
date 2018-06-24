@@ -5,5 +5,5 @@ from django.shortcuts import render
 
 def login(request):
     data = {}
-    template_name = 'auth_Login/login.html'
+    template_name = 'blankPage.html'
     return render(request, template_name, data)

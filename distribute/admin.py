@@ -1,8 +1,8 @@
 from django.contrib import admin
-
+from distribute.models import Send
 # Register your models here.
 
 
-# @admin.register(Team)
-# class TeamAdmin(admin.ModelAdmin):
-#     pass
+@admin.register(Send)
+class SendAdmin(admin.ModelAdmin):
+    pass

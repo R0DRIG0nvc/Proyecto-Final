@@ -22,8 +22,9 @@ from auth_Login.views import login
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', login, name='login'),
-    path('inventory/', include('inventory.urls'), name='basket'),
-    path('distribute/', include('distribute.urls'), name='basket'),
-    path('auth_Login/', include('auth_Login.urls'), name='basket'),
+    path('auth_Login/', include('auth_Login.urls'), name='auth_Login'),
+    path('inventory/', include('inventory.urls'), name='inventory'),
+    path('distribute/', include('distribute.urls'), name='distribute'),
+    path('shoppingcart/', include('shoppingcart.urls'), name='shoppingcart'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

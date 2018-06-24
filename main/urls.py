@@ -17,11 +17,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from auth_Login.views import login
+from auth_Login.views import loginUser
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', login, name='login'),
+    path('', loginUser, name='auth_login'),
     path('auth_Login/', include('auth_Login.urls'), name='auth_Login'),
     path('inventory/', include('inventory.urls'), name='inventory'),
     path('distribute/', include('distribute.urls'), name='distribute'),

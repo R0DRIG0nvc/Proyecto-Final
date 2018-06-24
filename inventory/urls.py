@@ -3,5 +3,5 @@ from inventory import views
 
 
 urlpatterns = [
-    # path('', views.index, name="player"),
+    path('index', views.index, name="inventory_index"),
 ]

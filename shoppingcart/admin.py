@@ -5,7 +5,7 @@ from shoppingcart.models import ShoppingCart, BuyProduct, Buy
 
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['name']
 
 
 @admin.register(BuyProduct)

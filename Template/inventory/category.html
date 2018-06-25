@@ -1,0 +1,202 @@
+{% extends "Partials/_base.html" %}
+{% load static %}
+{% block Title %}Lista de Categorías{% endblock Title %}
+{% block Styles %}
+<link rel="stylesheet" href="{% static 'js/datatable/jquery.dataTables.min.css' %}">
+{% endblock Styles %}
+{% block Content %}
+<div class="row">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <span class="card-title">Categorías de Productos</span>
+                <button class="btn btn-success float-right" data-toggle='modal' data-target='#modalCategory' id="addCategory">Agregar Categoría</button>
+                <div class="table-responsive pt-4">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Categoría
+                                </th>
+                                <th>
+                                    Estado
+                                </th>
+                                <th>
+                                    Productos Asignados
+                                </th>
+                                <th>
+                                    Acción
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalCategory" tabindex="-1" role="dialog" aria-labelledby="modalCategory" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form id="formCategory">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCategory">Agregar nueva categoría</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                        <div class="form-group">
+                            <label for="id_name">Nombre</label>
+                            {{formCategory.name}}
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Agregar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock Content %}
+{% block JavaScript %}
+<script src="{% static 'js/datatable/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'js/datatable/dataTables.bootstrap4.min.js' %}"></script>
+<script>
+    var form;
+    var tableCategory = 
+    $('.table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": '',
+            "type": "POST",
+            "data": {
+                "csrfmiddlewaretoken": getCookie('csrftoken'),
+                "action": 'datatable'
+            },
+        },
+        "columns": [
+            { "data": "category" },
+            { "data": "status" },
+            { "data": "quantity" },
+            { "data": "action" },
+        ],
+        "columnDefs": [{
+            "className": 'text-center',
+            "targets": [2, 3],
+        }],
+        language: {
+            "sProcessing": "Procesando...",
+            "sLengthMenu": "Mostrar _MENU_ registros",
+            "sZeroRecords": "No se encontraron resultados",
+            "sEmptyTable": "Ningún dato disponible en esta tabla",
+            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+            "sInfoPostFix": "",
+            "sSearch": "Buscar:",
+            "sUrl": "",
+            "sInfoThousands": ",",
+            "sLoadingRecords": "Cargando...",
+            "oPaginate": {
+                "sFirst": "Primero",
+                "sLast": "Último",
+                "sNext": "Siguiente",
+                "sPrevious": "Anterior"
+            },
+            "oAria": {
+                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            }
+        },
+        "iDisplayLength": 10,
+    });
+    $('#formCategory').submit(function(){
+        if(form){
+            data = { action: 'addCategory',
+                     name: $('#id_name').val(),
+                     csrfmiddlewaretoken: getCookie('csrftoken'),
+                   }
+        }else{
+            data = { pk: $(this).parent().data('pk'),
+                     name: $('#id_name').val(),
+                     action: "edit",
+                     csrfmiddlewaretoken: getCookie('csrftoken'),
+                   }
+        }
+        $.ajax({
+            url: "{% url 'inventory_category' %}",
+            type: "POST",
+            data: data,
+            success: function (data) {
+                if (form){
+                    location.reload();
+                }else{
+                    if(data.result){
+                        tableCategory.draw();
+                    }else{
+                        alert("No puedes editar el base");
+                    }
+                }
+            },
+        })
+        return false;
+    });
+    $(document).on('click', '.enable', function () {
+        button = $(this);
+        $.ajax({
+            url: "{% url 'inventory_category' %}",
+            type: "POST",
+            data: {
+                pk: button.parent().data('pk'),
+                action: "enableCategory",
+                csrfmiddlewaretoken: getCookie('csrftoken'),
+            },
+            success: function (data) {
+                tableCategory.draw();
+            },
+        });
+    });
+    $(document).on('click', '.disable', function () {
+        button = $(this);
+        $.ajax({
+            url: "{% url 'inventory_category' %}",
+            type: "POST",
+            data: {
+                pk: button.parent().data('pk'),
+                action: "disableCategory",
+                csrfmiddlewaretoken: getCookie('csrftoken'),
+            },
+            success: function (data) {
+                tableCategory.draw();
+            },
+        });
+    });
+    $(document).on('click', '.delete', function () {
+        button = $(this);
+        $.ajax({
+            url: "{% url 'inventory_category' %}",
+            type: "POST",
+            data: {
+                pk: button.parent().data('pk'),
+                action: "deleteCategory",
+                csrfmiddlewaretoken: getCookie('csrftoken'),
+            },
+            success: function (data) {
+                tableCategory.draw();
+            },
+        });
+    });
+    $(document).on('click', '.edit', function () {
+        $('#id_name').val($($(this).parents().eq(3).find('td')[0]).html());
+        form = false;
+    });
+    $('#addCategory').on('click', function () {
+        form = true;
+    });
+</script>
+{% endblock JavaScript %}

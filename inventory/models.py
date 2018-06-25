@@ -5,6 +5,20 @@ from django.db import models
 
 class ProductCategory(models.Model):
     name = models.CharField(max_length=30)
+    status = models.BooleanField(default=True)
+
+    def setStatus(self, status):
+        self.status = status
+        self.save()
+        return
+    
+    def deleteCategory(self):
+        if self.name != 'Sin Categoría':
+            blankCategoryObj = ProductCategory.objects.filter(name='Sin Categoría')[0]
+            for x in self.product_set.all():
+                x.category = blankCategoryObj
+                x.save()
+            self.delete()
 
 
 class Product(models.Model):

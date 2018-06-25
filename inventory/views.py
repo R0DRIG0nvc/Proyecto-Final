@@ -8,6 +8,12 @@ from inventory.forms import FormProductCategory, FormProduct, FormEditProduct
 # Create your views here.
 
 
+def index(request):
+    data = {}
+    template_name = 'blankPage.html'
+    return render(request, template_name, data)
+
+
 def category(request):
     if request.POST:
         if request.POST['action'] == 'datatable':

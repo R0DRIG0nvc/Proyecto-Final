@@ -119,6 +119,21 @@
                 },
             });
         });
+        $(document).on('click', '.enable', function () {
+            button = $(this);
+            $.ajax({
+                url: "{% url 'inventory_product' %}",
+                type: "POST",
+                data: {
+                    pk: button.parent().data('pk'),
+                    action: "enableCategory",
+                    csrfmiddlewaretoken: getCookie('csrftoken'),
+                },
+                success: function (data) {
+                    tableProduct.draw();
+                },
+            });
+        });
         $(document).on('click', '.delete', function () {
             button = $(this);
             $.ajax({

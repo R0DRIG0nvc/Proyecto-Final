@@ -41,18 +41,10 @@
       </div>
     </li>
     <li class="nav-item">
-      <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-        <i class="menu-icon mdi fas fa-box"></i>
-        <span class="menu-title">Carro de compras</span>
-        <i class="menu-arrow"></i>
-      </a>
-      <div class="collapse" id="ui-basic">
-        <ul class="nav flex-column sub-menu">
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'shoppingcart_shoppingcart' %}">Lista</a>
-          </li>
-        </ul>
-      </div>
+        <a class="nav-link" href="{% url 'shoppingcart_shoppingcart' %}">
+            <i class="menu-icon mdi mdi-cart"></i>
+            <span class="menu-title">Carro de compras</span>
+        </a>
     </li>
   </ul>
 </nav>

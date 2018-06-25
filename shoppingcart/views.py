@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.db.models import Q
 from django.http import JsonResponse
 from shoppingcart.models import *
 from inventory.models import Product

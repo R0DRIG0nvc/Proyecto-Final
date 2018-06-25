@@ -11,7 +11,7 @@ class ProductCategory(models.Model):
         self.status = status
         self.save()
         return
-    
+  
     def deleteCategory(self):
         if self.name != 'Sin Categoría':
             blankCategoryObj = ProductCategory.objects.filter(name='Sin Categoría')[0]
@@ -19,11 +19,27 @@ class ProductCategory(models.Model):
                 x.category = blankCategoryObj
                 x.save()
             self.delete()
+    
+    def __str__(self):
+        return self.name
 
 
 class Product(models.Model):
     category = models.ForeignKey('ProductCategory', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='photoproduct/%Y/%m/%d/', default='img-default/productdefault.jpg')
+    image = models.ImageField(upload_to='photoproduct/', default='img-default/productdefault.jpg')
     name = models.CharField(max_length=30)
     price = models.PositiveIntegerField()
     quantity = models.PositiveIntegerField()
+    status = models.BooleanField(default=True)
+    delete = models.BooleanField(default=False)
+
+    def setStatus(self, status):
+        self.status = status
+        self.save()
+        return
+    
+    def setDelete(self):
+        self.delete = True
+        self.save()
+        return
+

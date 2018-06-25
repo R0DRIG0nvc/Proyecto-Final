@@ -1,0 +1,75 @@
+{% extends "Partials/_base.html" %}
+{% load static %}
+{% block Title %}Agregar Producto{% endblock Title %}
+{% block Styles %}
+{% endblock Styles %}
+{% block Content %}
+<div class="row">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Nuevo Producto</h4>
+                <form class="forms-sample" action="{% url 'inventory_addProduct' %}" method="POST" enctype="multipart/form-data">
+                     {% csrf_token %}
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="id_name">Nombre</label>
+                                {{formProduct.name}}
+                                {{formProduct.errors.name}}
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="id_category">Categoría</label>
+                                 {{formProduct.category}}
+                                 {{formProduct.errors.category}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Imagen del Producto</label>
+                        <input type="file" name="img[]" class="file-upload-default">
+                        <div class="input-group col-xs-12">
+                             {{formProduct.image}}
+                            <!-- <input type="text" class="form-control file-upload-info" id="fakeImage" disabled placeholder="Subir Imagen"> -->
+                            <span class="input-group-append">
+                                <button class="file-upload-browse btn btn-info" id="uploadImage" type="button">Subir</button>
+                            </span>
+                             {{formProduct.errors.image}}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="exampleInputName1">Precio</label>
+                                 {{formProduct.price}}
+                                 {{formProduct.errors.price}}
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="exampleInputEmail3">Cantidad</label>
+                                 {{formProduct.quantity}}
+                                 {{formProduct.errors.quantity}}
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success mr-2">Agregar</button>
+                    <a href="{% url 'inventory_product' %}"><button class="btn btn-light">Cancelar</button></a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock Content %}
+{% block JavaScript %}
+<script>
+    $('#uploadImage').on('click', function(){
+        $('#id_image').trigger('click');
+    })
+    $('#id_image').on('change', function(){
+        $('#fakeImage').val($(this).val());
+    })
+</script>
+{% endblock JavaScript %}

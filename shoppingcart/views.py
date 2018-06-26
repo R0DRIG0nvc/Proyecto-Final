@@ -3,30 +3,25 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.urls import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from auth_Login.group_required import group_required
 from shoppingcart.models import ShoppingCart, BuyProduct
 from shoppingcart.forms import FormShoppingCart, FormBuyProduct
 from inventory.models import Product
 
-# Create your views here.
 
-
-def index(request):
-    data = {}
-    template_name = 'blankPage.html'
-    return render(request, template_name, data)
-
-
+@group_required(('Cliente', 'Administrador'), login_url='auth_login')
 def shoppingcart(request):
     if request.POST:
         if request.POST['action'] == 'datatable':
             data = []
             if request.POST['search[value]'] == '':
-                query = ShoppingCart.objects.all()[int(request.POST['start']):int(
+                query = ShoppingCart.objects.filter(client=request.user)[int(request.POST['start']):int(
                     request.POST['start']) + int(request.POST['length'])]
-                json = {"recordsTotal": ShoppingCart.objects.all().count(),
-                        "recordsFiltered": ShoppingCart.objects.all().count()}
+                json = {"recordsTotal": ShoppingCart.objects.filter(client=request.user).count(),
+                        "recordsFiltered": ShoppingCart.objects.filter(client=request.user).count()}
             else:
-                query = ShoppingCart.objects.filter(Q(name__icontains=request.POST['search[value]']))
+                query = ShoppingCart.objects.filter(Q(name__icontains=request.POST['search[value]']),
+                                                    client=request.user)
                 json = {"recordsTotal": query.count(),
                         "recordsFiltered": query.count()}
             for x in query:
@@ -58,7 +53,6 @@ def shoppingcart(request):
             ShoppingCart.objects.get(pk=request.POST['pk']).delete()
             return JsonResponse({})
         elif request.POST['action'] == 'name':
-            pass
             cart = ShoppingCart.objects.get(pk=request.POST['pk'])
             cart.name = request.POST['name']
             cart.save()
@@ -68,6 +62,7 @@ def shoppingcart(request):
     return render(request, template_name, data)
 
 
+@group_required(('Cliente', 'Administrador'), login_url='auth_login')
 def detailCart(request, cart_id):
     cart = ShoppingCart.objects.get(pk=cart_id)
     if request.POST:
@@ -128,7 +123,6 @@ def detailCart(request, cart_id):
         elif request.POST['action'] == 'quantity':
             obj = BuyProduct.objects.get(pk=request.POST['pk'])
             price = obj.product.price * int(request.POST['val'])
-            print("asdasd")
             obj.quantity = request.POST['val']
             obj.save()
             data = {'val': price}
@@ -143,6 +137,7 @@ def detailCart(request, cart_id):
     return render(request, template_name, data)
 
 
+@group_required(('Cliente', 'Administrador'), login_url='auth_login')
 def products(request):
     if request.POST:
         if request.POST['action'] == 'loadShoppingCart':

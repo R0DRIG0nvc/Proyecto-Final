@@ -6,7 +6,7 @@
 {% endblock Style %}
 {% block Content %}
 <div class="row">
-    <div class="col-12 grid-margin stretch-card">
+    <div class="col-12">
         <div class="card">
             <div class="card-body">
                 <span class="card-title">Categorías de Productos</span>
@@ -14,7 +14,7 @@
                     <button class="btn btn-success float-right" data-toggle='modal' data-target='#modalCategory'>Agregar Producto</button>
                 </a>
                 <div class="table-responsive pt-4">
-                    <table class="table table-striped">
+                    <table class="table display table-striped responsive dt-responsive" cellspacing="0" width="100%">
                         <thead>
                             <tr>
                                 <th>
@@ -55,99 +55,101 @@
 <script>
     var tableProduct = 
     $('.table').DataTable({
-            "processing": true,
-            "serverSide": true,
-            "ajax": {
-                "url": "",
-                "type": "POST",
-                "data": {
-                    "csrfmiddlewaretoken": getCookie('csrftoken'),
-                    "action": 'datatable'
-                },
+        "processing": true,
+        "serverSide": true,
+        "responsive": true,
+        "ajax": {
+            "url": "",
+            "type": "POST",
+            "data": {
+                "csrfmiddlewaretoken": getCookie('csrftoken'),
+                "action": 'datatable'
             },
-            "columns": [
-                { "data": "image" },
-                { "data": "name" },
-                { "data": "category" },
-                { "data": "price" },
-                { "data": "quantity" },
-                { "data": "status" },
-                { "data": "action" },
-            ],
-            "columnDefs": [{
-                "className": 'text-center',
-                "targets": [4, 5],
-            }],
-            language: {
-                "sProcessing": "Procesando...",
-                "sLengthMenu": "Mostrar _MENU_ registros",
-                "sZeroRecords": "No se encontraron resultados",
-                "sEmptyTable": "Ningún dato disponible en esta tabla",
-                "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-                "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-                "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
-                "sInfoPostFix": "",
-                "sSearch": "Buscar:",
-                "sUrl": "",
-                "sInfoThousands": ",",
-                "sLoadingRecords": "Cargando...",
-                "oPaginate": {
-                    "sFirst": "Primero",
-                    "sLast": "Último",
-                    "sNext": "Siguiente",
-                    "sPrevious": "Anterior"
-                },
-                "oAria": {
-                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
-                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-                }
+        },
+        "columns": [
+            { "data": "image" },
+            { "data": "name" },
+            { "data": "category" },
+            { "data": "price" },
+            { "data": "quantity" },
+            { "data": "status" },
+            { "data": "action" },
+        ],
+        "columnDefs": [{
+            "className": 'text-center',
+            "targets": [4, 5],
+        }],
+        language: {
+            "sProcessing": "Procesando...",
+            "sLengthMenu": "Mostrar _MENU_ registros",
+            "sZeroRecords": "No se encontraron resultados",
+            "sEmptyTable": "Ningún dato disponible en esta tabla",
+            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+            "sInfoPostFix": "",
+            "sSearch": "Buscar:",
+            "sUrl": "",
+            "sInfoThousands": ",",
+            "sLoadingRecords": "Cargando...",
+            "oPaginate": {
+                "sFirst": "Primero",
+                "sLast": "Último",
+                "sNext": "Siguiente",
+                "sPrevious": "Anterior"
             },
-            "iDisplayLength": 10,
+            "oAria": {
+                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            }
+        },
+        "iDisplayLength": 10,
+    });
+    new $.fn.dataTable.FixedHeader(tableProduct);
+    $(document).on('click', '.disable', function () {
+        button = $(this);
+        $.ajax({
+            url: "{% url 'inventory_product' %}",
+            type: "POST",
+            data: {
+                pk: button.parent().data('pk'),
+                action: "disableCategory",
+                csrfmiddlewaretoken: getCookie('csrftoken'),
+            },
+            success: function (data) {
+                tableProduct.draw();
+            },
         });
-        $(document).on('click', '.disable', function () {
-            button = $(this);
-            $.ajax({
-                url: "{% url 'inventory_product' %}",
-                type: "POST",
-                data: {
-                    pk: button.parent().data('pk'),
-                    action: "disableCategory",
-                    csrfmiddlewaretoken: getCookie('csrftoken'),
-                },
-                success: function (data) {
-                    tableProduct.draw();
-                },
-            });
+    });
+    $(document).on('click', '.enable', function () {
+        button = $(this);
+        $.ajax({
+            url: "{% url 'inventory_product' %}",
+            type: "POST",
+            data: {
+                pk: button.parent().data('pk'),
+                action: "enableCategory",
+                csrfmiddlewaretoken: getCookie('csrftoken'),
+            },
+            success: function (data) {
+                tableProduct.draw();
+            },
         });
-        $(document).on('click', '.enable', function () {
-            button = $(this);
-            $.ajax({
-                url: "{% url 'inventory_product' %}",
-                type: "POST",
-                data: {
-                    pk: button.parent().data('pk'),
-                    action: "enableCategory",
-                    csrfmiddlewaretoken: getCookie('csrftoken'),
-                },
-                success: function (data) {
-                    tableProduct.draw();
-                },
-            });
+    });
+    $(document).on('click', '.delete', function () {
+        button = $(this);
+        $.ajax({
+            url: "{% url 'inventory_product' %}",
+            type: "POST",
+            data: {
+                pk: button.parent().data('pk'),
+                action: "deleteCategory",
+                csrfmiddlewaretoken: getCookie('csrftoken'),
+            },
+            success: function (data) {
+                tableProduct.draw();
+            },
         });
-        $(document).on('click', '.delete', function () {
-            button = $(this);
-            $.ajax({
-                url: "{% url 'inventory_product' %}",
-                type: "POST",
-                data: {
-                    pk: button.parent().data('pk'),
-                    action: "deleteCategory",
-                    csrfmiddlewaretoken: getCookie('csrftoken'),
-                },
-                success: function (data) {
-                    tableProduct.draw();
-                },
-            });
-        });
+    });
 </script>
 {% endblock JavaScript %}

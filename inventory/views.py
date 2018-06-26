@@ -5,15 +5,11 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from inventory.models import ProductCategory, Product
 from inventory.forms import FormProductCategory, FormProduct, FormEditProduct
+from auth_Login.group_required import group_required
 # Create your views here.
 
 
-def index(request):
-    data = {}
-    template_name = 'blankPage.html'
-    return render(request, template_name, data)
-
-
+@group_required(('Administrador', ), login_url='shoppingcart_products')
 def category(request):
     if request.POST:
         if request.POST['action'] == 'datatable':
@@ -71,6 +67,7 @@ def category(request):
     return render(request, template_name, data)
 
 
+@group_required(('Administrador', ), login_url='shoppingcart_products')
 def product(request):
     if request.POST:
         if request.POST['action'] == 'datatable':
@@ -121,6 +118,7 @@ def product(request):
     return render(request, template_name, data)
 
 
+@group_required(('Administrador', ), login_url='shoppingcart_products')
 def addProduct(request):
     data = {}
     data['formProduct'] = FormProduct()
@@ -133,6 +131,7 @@ def addProduct(request):
     return render(request, template_name, data)
 
 
+@group_required(('Administrador', ), login_url='shoppingcart_products')
 def editProduct(request, idProduct):
     data = {}
     data['productObj'] = Product.objects.get(pk=idProduct)

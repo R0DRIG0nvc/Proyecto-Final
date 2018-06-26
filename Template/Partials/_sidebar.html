@@ -5,10 +5,10 @@
       <div class="nav-link">
         <div class="user-wrapper">
           <div class="profile-image">
-            <img src="{% static 'images/faces/face1.jpg' %}" alt="profile image">
+            <img src="{% static 'user.svg' %}" alt="profile image">
           </div>
           <div class="text-wrapper">
-            <p class="profile-name">Richard V.Welsh</p>
+            <p class="profile-name">{{request.user.first_name}} {{request.user.last_name}}</p>
             <div>
               <small class="designation text-muted">Manager</small>
               <span class="status-indicator online"></span>
@@ -23,6 +23,13 @@
         <span class="menu-title">Lista de Productos</span>
       </a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'shoppingcart_shoppingcart' %}">
+        <i class="menu-icon mdi mdi-cart"></i>
+        <span class="menu-title">Carro de compras</span>
+      </a>
+    </li>
+    {% if request.user|has_group:"Administrador" %}
     <li class="nav-item">
       <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
         <i class="menu-icon mdi fas fa-box"></i>
@@ -40,11 +47,6 @@
         </ul>
       </div>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'shoppingcart_shoppingcart' %}">
-            <i class="menu-icon mdi mdi-cart"></i>
-            <span class="menu-title">Carro de compras</span>
-        </a>
-    </li>
+    {% endif %}
   </ul>
 </nav>

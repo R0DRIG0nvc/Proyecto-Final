@@ -23,9 +23,8 @@ def loginUser(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                return HttpResponseRedirect(reverse('shoppingcart_shoppingcart'))
+                return HttpResponseRedirect(reverse('shoppingcart_products'))
             else:
-                print("usuario o contraseña no validos")
                 messages.warning(
                     request,
                     'Usuario o contraseña incorrectos!'
@@ -78,6 +77,4 @@ def registerUser(request):
                 request,
                 'Las contraseñas no coinciden!'
             )
-
-
     return render(request, template_name, data)

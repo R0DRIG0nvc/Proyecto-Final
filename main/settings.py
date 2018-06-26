@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'autofixture',
     'inventory',
-    'distribute',
     'shoppingcart',
     'auth_Login'
 ]
@@ -69,6 +68,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'builtins': [
+                'auth_Login.templatetags.has_group'
+            ]
         },
     },
 ]

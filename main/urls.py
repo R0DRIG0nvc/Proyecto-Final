@@ -24,7 +24,6 @@ urlpatterns = [
     path('', loginUser, name='auth_login'),
     path('auth_Login/', include('auth_Login.urls'), name='auth_Login'),
     path('inventory/', include('inventory.urls'), name='inventory'),
-    path('distribute/', include('distribute.urls'), name='distribute'),
     path('shoppingcart/', include('shoppingcart.urls'), name='shoppingcart'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

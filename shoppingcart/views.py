@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.db.models import Q
 from django.http import JsonResponse
+from django.shortcuts import redirect
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from shoppingcart.models import *
 from inventory.models import Product
 from shoppingcart.forms import *
@@ -30,14 +33,23 @@ def shoppingcart(request):
             for x in query:
                 status = '<label class="badge badge-warning">En Proceso</label>'
                 deleteButton = '<button class="btn btn-danger mr-2 delete">Eliminar</button>'
+                editButton = '<button class="btn btn-primary editar mr-2">Ver/Editar</button>'
                 if x.status:
                     status = '<label class="badge badge-success">Comprado</label>'
+                    editButton = '<button class="btn btn-primary editar mr-2">Ver</button>'
                     deleteButton = ''
-                data.append({'name': x.name,
+                totalPrice = 0
+                for i in x.buyproduct_set.all():
+                    totalPrice += i.quantity * i.product.price
+
+                data.append({'name': '<input type="text" data-pk=' + str(x.pk) + ' class="name" value="' + str(x.name) + '">',
                              'quantity': x.buyproduct_set.all().count(),
+                             'price': totalPrice,
                              'status': status,
                              'action': '<div data-pk=' + str(x.pk) + '>\
-                                            <button class="btn btn-primary editar mr-2">Ver/Editar</button>'
+                                            <a href=' + reverse('shoppingcart_detailCart', kwargs={'cart_id': x.pk}) + '>'
+                                                + editButton +
+                                            '</a>'
                                             + deleteButton +
                                         '</div>'
                              })
@@ -46,9 +58,89 @@ def shoppingcart(request):
         elif request.POST['action'] == 'delete':
             ShoppingCart.objects.get(pk=request.POST['pk']).delete()
             return JsonResponse({})
+        elif request.POST['action'] == 'name':
+            pass
+            cart = ShoppingCart.objects.get(pk=request.POST['pk'])
+            cart.name = request.POST['name']
+            cart.save()
     data = {}
     data['shoppingCart'] = FormShoppingCart()
     template_name = 'shoppingcart/shoppingcart.html'
+    return render(request, template_name, data)
+
+
+def detailCart(request, cart_id):
+    cart = ShoppingCart.objects.get(pk=cart_id)
+    if request.POST:
+        if request.POST['action'] == 'datatable':
+            totalPrice = 0
+            data = []
+            query = cart.buyproduct_set.all()[int(request.POST['start']):int(
+                request.POST['start']) + int(request.POST['length'])]
+            json = {"recordsTotal": cart.buyproduct_set.all().count(),
+                    "recordsFiltered": cart.buyproduct_set.all().count()}
+            for x in query:
+                quantityInput = x.quantity
+                deleteButton = ''
+                if not cart.status:
+                    quantityInput = '<input type="number" data-pk=' + str(x.pk) + ' class="quantity" value="' + str(x.quantity) + '">'
+                    deleteButton = '<button class="btn btn-danger mr-2 delete">Eliminar</button>'
+                status = '<label class="badge badge-warning">Agotado</label>'
+                if x.product.status:
+                    status = x.product.quantity
+
+                price = x.quantity * x.product.price
+                totalPrice += price
+                data.append({'image': '<img src="' + x.product.image.url + '"alt="Foto" class="img-thumbnail" style="with: 50px; height: 50px">',
+                             'category': x.product.category.name,
+                             'name': x.product.name,
+                             'quantity': quantityInput,
+                             'price': price,
+                             'status': status,
+                             'action': '<div data-pk=' + str(x.pk) + '>'
+                                            + deleteButton +
+                                        '</div>'
+                             })
+            priceButton = ''
+            if not cart.status:
+                priceButton = '<button type="button" class="btn btn-primary" id="buy">Finalizar compra</button>'
+            data.append({'image': '',
+                         'category': '',
+                         'name': '',
+                         'quantity': '',
+                         'price': '',
+                         'status': '<b>Total: </b>',
+                         'action': '<span id = "total">' + str(totalPrice) + '</span>',
+                         })
+            data.append({'image': '',
+                         'category': '',
+                         'name': '',
+                         'quantity': '',
+                         'price': '',
+                         'status': '',
+                         'action': priceButton,
+                         })
+            json['data'] = data
+            json['totalPrice'] = totalPrice
+            return JsonResponse(json)
+        elif request.POST['action'] == 'delete':
+            BuyProduct.objects.get(pk=request.POST['pk']).delete()
+            return JsonResponse({})
+        elif request.POST['action'] == 'quantity':
+            obj = BuyProduct.objects.get(pk=request.POST['pk'])
+            price = obj.product.price * int(request.POST['val'])
+            print("asdasd")
+            obj.quantity = request.POST['val']
+            obj.save()
+            data = {'val': price}
+            return JsonResponse(data)
+        elif request.POST['action'] == 'buy':
+            cart.status = True
+            cart.save()
+            return JsonResponse({})
+    data = {}
+    data['obj'] = cart
+    template_name = 'shoppingcart/detailCart.html'
     return render(request, template_name, data)
 
 

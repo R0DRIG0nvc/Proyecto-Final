@@ -1,9 +1,9 @@
 {% extends "Partials/_base.html" %}
 {% load static %}
 {% block Title %}Carro de compras{% endblock Title %}
-{% block Styles %}
+{% block Style %}
 <link rel="stylesheet" href="{% static 'js/datatable/jquery.dataTables.min.css' %}">
-{% endblock Styles %}
+{% endblock Style %}
 {% block Content %}
 <div class="row">
     <div class="col-12 grid-margin stretch-card">
@@ -19,6 +19,9 @@
                                 </th>
                                 <th>
                                     Cantidad de Productos
+                                </th>
+                                <th>
+                                    Precio
                                 </th>
                                 <th>
                                   Estado
@@ -57,12 +60,13 @@
         "columns": [
             { "data": "name" },
             { "data": "quantity" },
+            { "data": "price" },
             { "data": "status" },
             { "data": "action" },
         ],
         "columnDefs": [{
             "className": 'text-center',
-            "targets": [2, 3],
+            "targets": [1, 4],
         }],
         language: {
             "sProcessing": "Procesando...",
@@ -89,7 +93,7 @@
             }
         },
         "iDisplayLength": 10,
-    });
+      });
       $(document).on('click', '.delete', function () {
             button = $(this);
             $.ajax({
@@ -105,7 +109,21 @@
                  },
            });
        });
+      $(document).on('change', '.name', function () {
+            button = $(this);
+            $.ajax({
+                url: "{% url 'shoppingcart_shoppingcart' %}",
+                type: "POST",
+                data: {
+                    name: button.val(),
+                    pk: button.data('pk'),
+                    action: "name",
+                    csrfmiddlewaretoken: getCookie('csrftoken'),
+                 },
+                 success: function (data) {
+                 },
+             });
+       });
     });
-
 </script>
 {% endblock JavaScript %}

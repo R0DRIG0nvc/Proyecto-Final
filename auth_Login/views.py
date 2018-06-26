@@ -23,7 +23,7 @@ def loginUser(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                return HttpResponseRedirect(reverse('inventory_index'))
+                return HttpResponseRedirect(reverse('shoppingcart_shoppingcart'))
             else:
                 print("usuario o contraseña no validos")
                 messages.warning(
@@ -48,6 +48,8 @@ def registerUser(request):
     template_name = 'auth_Login/register.html'
 
     if request.POST:
+        firstName = request.POST['name']
+        lastName = request.POST['lastName']
         username = request.POST['username']
         password = request.POST['password']
         confirmPassword = request.POST['confirmPassword']
@@ -56,6 +58,8 @@ def registerUser(request):
             if not User.objects.filter(username=username).exists():
                 user = User.objects.create_user(username=username,
                                                 password=password,
+                                                first_name=firstName,
+                                                last_name=lastName
                                                 )
                 clientGroup = Group.objects.get(name='Cliente')
                 clientGroup.user_set.add(user)

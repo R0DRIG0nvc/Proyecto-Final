@@ -37,9 +37,8 @@ class Product(models.Model):
         self.status = status
         self.save()
         return
-    
+
     def setDelete(self):
         self.delete = True
         self.save()
         return
-

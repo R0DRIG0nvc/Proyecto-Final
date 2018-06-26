@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.db.models import Q
 from django.http import JsonResponse
-from shoppingcart.models import *
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from shoppingcart.models import ShoppingCart
 from inventory.models import Product
-from shoppingcart.forms import *
+from shoppingcart.forms import FormShoppingCart
 
 # Create your views here.
 
@@ -53,7 +54,31 @@ def shoppingcart(request):
 
 
 def products(request):
+    if request.POST:
+        if request.POST['action'] == 'loadShoppingCart':
+            htmlShopping = ''
+            for x in ShoppingCart.objects.filter(client=request.user, status=False).values('name', 'pk'):
+                htmlShopping += '<option ' + str(x['pk']) + '>' + x['name'] + '</option>'
+            return JsonResponse({'shoppingCart': htmlShopping})
+        elif request.POST['action'] == 'addShoppingCart':
+            fomrObj = FormShoppingCart(request.POST)
+            if fomrObj.is_valid():
+                fomrObj = fomrObj.save(commit=False)
+                fomrObj.client = request.user
+                fomrObj.save()
+            return JsonResponse({})
     data = {}
+    data['formShopping'] = FormShoppingCart()
     template_name = "shoppingcart/products.html"
-    data['products'] = Product.objects.all()
+    productList = Product.objects.filter(status=True,
+                                         delete=False)
+    page = request.GET.get('page', 1)
+    paginator = Paginator(productList, 8)
+    try:
+        data['products'] = paginator.page(page)
+    except PageNotAnInteger:
+        data['products'] = paginator.page(1)
+    except EmptyPage:
+        data['products'] = paginator.page(paginator.num_pages)
+
     return render(request, template_name, data)

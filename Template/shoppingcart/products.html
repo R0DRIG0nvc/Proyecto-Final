@@ -100,7 +100,6 @@
             <span class="pull-right">{{x.name}}</span>
             <div class="offer">Stock: <b id='productStock'>{{x.quantity}}</b></div>
             <div class="detail col-12">
-                <!-- <p>Glyphicons in Bootstrap : Bootstrap Includes over 250 glyphs in font format </p> -->
                 <img src="{% get_media_prefix %}{{x.image}}" alt="{{x.name}}" class="move30 centerimage"/>
                 <button type="button" class="btn btn-info btn-block addProduct" data-pk="{{x.pk}}" data-toggle='modal' data-target='#modalProduct'>Agregar al Carrito</button>
             </div>
@@ -147,7 +146,6 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-4" id="imageModal">
-                            <!-- <img src="/media/photoproduct/c3b3ee7fb2d915effcafe313d67fd0a5-product_b8yRDX4.jpg" alt="Disco Sólido" class="move30 center-image-modal"> -->
                         </div>
                         <div class="col-8">
                             <div class="row">
@@ -160,7 +158,8 @@
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label for="quantity">Cantidad a comprar</label>
-                                        <input id="quantityProduct" type="number" min="1" class="form-control" value="1">
+                                        {{formBuy.quantity}}
+                                        <!-- <input id="quantityProduct" type="number" min="1" class="form-control" value="1"> -->
                                     </div>
                                 </div>
                             </div>
@@ -168,7 +167,8 @@
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label for="id_name">Agregar al carro</label>
-                                        <select class="form-control" name="shoppingC" id="shoppingC"></select>
+                                         {{formBuy.shoppingcart}}
+                                        <!-- <select class="form-control" name="shoppingC" id="shoppingC"></select> -->
                                     </div>
                                 </div>
                             </div>
@@ -177,7 +177,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success">Agregar</button>
-                    <button type="submit" class="btn btn-primary" data-dismiss="modal" data-toggle='modal' data-target='#modalShoppingCart'>Crear carro de compra</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" data-toggle='modal' data-target='#modalShoppingCart'>Crear carro de compra</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 </div>
             </form>
@@ -202,7 +202,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success">Crear</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" data-toggle='modal' data-target='#modalProduct'>Cerrar</button>
                 </div>
             </form>
         </div>
@@ -215,8 +215,6 @@
     var button;
     $('.addProduct').on('click', function(){
         button = $(this);
-        console.log("ASDSD");
-        
         $.ajax({
             url: "{% url 'shoppingcart_products' %}",
             type: "POST",
@@ -228,11 +226,12 @@
             success: function (data) {
                 product = $(button.parents().eq(1));
                 stock = $(product.find('#productStock')).html();
-                $('#quantityProduct').attr({'max': stock});
+                $('#id_quantity').val('1');
+                $('#id_quantity').attr({'max': stock});
                 $('#imageModal').html($(product.find('img')[0]).clone());
                 $('#nameProduct').html($(product.find('span')).html());
                 $('#stockProduct').html(stock);
-                $('#shoppingC').html(data['shoppingCart']);
+                $('#id_shoppingcart').html(data['shoppingCart']);
             },
         });
     });
@@ -252,5 +251,26 @@
         });
         return false;
     });
+    $('#formProduct').submit(function(){
+        data = $(this).serialize() + '&product=' + button.data('pk') + '&action=addProdutToShoppingCart&csrfmiddlewaretoken=' + getCookie('csrftoken');
+        $.ajax({
+            url: "{% url 'shoppingcart_products' %}",
+            type: "POST",
+            data: data,
+            success: function (data) {
+
+                switch ((data['result'])) {
+                    case true:
+                        $('#modalProduct').modal('hide');
+                        alert("Agregado con éxito al carro")
+                        break;
+                    case false:
+                        alert("Intente nuevamente")
+                        break;
+                }
+            },
+        });
+        return false
+    })
 </script>
 {% endblock JavaScript %}

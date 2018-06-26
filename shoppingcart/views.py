@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from shoppingcart.models import ShoppingCart
 from inventory.models import Product
-from shoppingcart.forms import FormShoppingCart
+from shoppingcart.forms import FormShoppingCart, FormBuyProduct
 
 # Create your views here.
 
@@ -58,7 +58,7 @@ def products(request):
         if request.POST['action'] == 'loadShoppingCart':
             htmlShopping = ''
             for x in ShoppingCart.objects.filter(client=request.user, status=False).values('name', 'pk'):
-                htmlShopping += '<option ' + str(x['pk']) + '>' + x['name'] + '</option>'
+                htmlShopping += '<option value="' + str(x['pk']) + '">' + x['name'] + '</option>'
             return JsonResponse({'shoppingCart': htmlShopping})
         elif request.POST['action'] == 'addShoppingCart':
             fomrObj = FormShoppingCart(request.POST)
@@ -67,8 +67,15 @@ def products(request):
                 fomrObj.client = request.user
                 fomrObj.save()
             return JsonResponse({})
+        elif request.POST['action'] == 'addProdutToShoppingCart':
+            formBuyProduct = FormBuyProduct(request.POST)
+            if formBuyProduct.is_valid():
+                formBuyProduct.save()
+                return JsonResponse({'result': True})
+            return JsonResponse({'result': False})
     data = {}
     data['formShopping'] = FormShoppingCart()
+    data['formBuy'] = FormBuyProduct()
     template_name = "shoppingcart/products.html"
     productList = Product.objects.filter(status=True,
                                          delete=False)

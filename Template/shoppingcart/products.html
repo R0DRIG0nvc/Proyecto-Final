@@ -1,116 +1,276 @@
 {% extends "Partials/_base.html" %}
 {% load static %}
 {% block Title %}Productos{% endblock Title %}
-{% block Styles %}
-<link rel="stylesheet" href="{% static 'js/datatable/jquery.dataTables.min.css' %}">
-{% endblock Styles %}
+{% block Style %}
+<style>
+    img {
+        max-width: 100%;
+    }
+
+    * {
+        transition: all .5s ease;
+        -moz-transition: all .5s ease;
+        -webkit-transition: all .5s ease
+    }
+
+    .my-list {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #f5efef;
+        float: left;
+        margin: 15px 0;
+        border-radius: 5px;
+        box-shadow: 2px 3px 0px #e4d8d8;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .my-list .centerimage{
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        height: 250px;
+
+    }
+
+    .my-list h3 {
+        text-align: left;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 21px;
+        margin: 0px;
+        padding: 0px;
+        border-bottom: 1px solid #ccc4c4;
+        margin-bottom: 5px;
+        padding-bottom: 5px;
+    }
+
+    .my-list span {
+        float: left;
+        font-weight: bold;
+    }
+
+    .my-list span:last-child {
+        float: right;
+    }
+
+    .my-list .offer {
+        width: 100%;
+        float: left;
+        margin: 5px 0;
+        border-top: 1px solid #ccc4c4;
+        margin-top: 5px;
+        padding-top: 5px;
+        color: #afadad;
+    }
+
+    .detail {
+        position: absolute;
+        top: -102%;
+        left: 0;
+        text-align: center;
+        background: #fff;
+        height: 100%;
+        width: 100%;
+
+    }
+
+    .my-list:hover .detail {
+        top: 0;
+    }
+    .move30{
+        padding-top: 30px;
+        padding-bottom: 30px;
+    }
+    .center-image-modal{
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 250;
+    }
+</style>
+{% endblock Style %}
 {% block Content %}
 <div class="row">
-    <div class="col-12 grid-margin stretch-card">
-        <div class="card">
-            <div class="card-body">
-                <span class="card-title">Productos</span>
-                {% for x in products %}
-                    <h2>Categoria = {{x.category.name}}</h2>
-                    <h2>Nombre = {{x.name}}</h2>
-                    <h2>Precio = {{x.price}}</h2>
-                    <br>
-                {% endfor %}
-                <!-- <div class="table-responsive pt-4">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>
-                                    Nombre
-                                </th>
-                                <th>
-                                    Cantidad de Productos
-                                </th>
-                                <th>
-                                  Estado
-                                </th>
-                                <th>
-                                    Acción
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div> -->
+    {% for x in products %}
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="my-list">
+            <img src="{% get_media_prefix %}{{x.image}}" alt="{{x.name}}" class="centerimage"/>
+            <h3>{{x.category.name}}</h3>
+            <span class="pull-right">{{x.name}}</span>
+            <div class="offer">Stock: <b id='productStock'>{{x.quantity}}</b></div>
+            <div class="detail col-12">
+                <img src="{% get_media_prefix %}{{x.image}}" alt="{{x.name}}" class="move30 centerimage"/>
+                <button type="button" class="btn btn-info btn-block addProduct" data-pk="{{x.pk}}" data-toggle='modal' data-target='#modalProduct'>Agregar al Carrito</button>
             </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<div class="row">
+    <div class="col-12 text-center">
+        {% if products.has_next or products.has_previous %}
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                {% if products.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ products.previous_page_number }}">Anterior</a>
+                </li>
+                {% endif %} {% for page in products.paginator.page_range %}
+                <li class="page-item {% if products.number == page %}active{% endif %}">
+                    <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                </li>
+                {% endfor %} {% if products.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ products.next_page_number }}">Siguiente</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ products.paginator.num_pages }}">Último</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+<div class="modal fade" id="modalProduct" tabindex="-1" role="dialog" aria-labelledby="modalProduct" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form id="formProduct">
+                <div class="modal-header">
+                    <h5 class="modal-title">Agregar Producto</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-4" id="imageModal">
+                        </div>
+                        <div class="col-8">
+                            <div class="row">
+                                <div class="col-12">
+                                    <p>Producto: <b id="nameProduct"></b></p>
+                                    <p>Stock: <b id="stockProduct"></b></p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="quantity">Cantidad a comprar</label>
+                                        {{formBuy.quantity}}
+                                        <!-- <input id="quantityProduct" type="number" min="1" class="form-control" value="1"> -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="id_name">Agregar al carro</label>
+                                         {{formBuy.shoppingcart}}
+                                        <!-- <select class="form-control" name="shoppingC" id="shoppingC"></select> -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Agregar</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" data-toggle='modal' data-target='#modalShoppingCart'>Crear carro de compra</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalShoppingCart" tabindex="-1" role="dialog" aria-labelledby="modalShoppingCart" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form id="formShopping">
+                <div class="modal-header">
+                    <h5 class="modal-title">Crear Carro de Compra</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="nameShoppingCart">Nombre</label>
+                        {{formShopping.name}}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Crear</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" data-toggle='modal' data-target='#modalProduct'>Cerrar</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 {% endblock Content %}
 {% block JavaScript %}
-<script src="{% static 'js/datatable/jquery.dataTables.min.js' %}"></script>
-<script src="{% static 'js/datatable/dataTables.bootstrap4.min.js' %}"></script>
 <script src="{% static 'getCookie.js' %}" charset="utf-8"></script>
 <script>
-    // $(document).ready(function(){
-    //   $('.table').DataTable({
-    //     "processing": true,
-    //     "serverSide": true,
-    //     "ajax": {
-    //         "url": "{% url 'shoppingcart_shoppingcart' %}",
-    //         "type": "POST",
-    //         "data": {
-    //             "csrfmiddlewaretoken": getCookie('csrftoken'),
-    //             "action": 'datatable'
-    //         },
-    //     },
-    //     "columns": [
-    //         { "data": "name" },
-    //         { "data": "quantity" },
-    //         { "data": "status" },
-    //         { "data": "action" },
-    //     ],
-    //     "columnDefs": [{
-    //         "className": 'text-center',
-    //         "targets": [2, 3],
-    //     }],
-    //     language: {
-    //         "sProcessing": "Procesando...",
-    //         "sLengthMenu": "Mostrar _MENU_ registros",
-    //         "sZeroRecords": "No se encontraron resultados",
-    //         "sEmptyTable": "Ningún dato disponible en esta tabla",
-    //         "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-    //         "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-    //         "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
-    //         "sInfoPostFix": "",
-    //         "sSearch": "Buscar:",
-    //         "sUrl": "",
-    //         "sInfoThousands": ",",
-    //         "sLoadingRecords": "Cargando...",
-    //         "oPaginate": {
-    //             "sFirst": "Primero",
-    //             "sLast": "Último",
-    //             "sNext": "Siguiente",
-    //             "sPrevious": "Anterior"
-    //         },
-    //         "oAria": {
-    //             "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
-    //             "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-    //         }
-    //     },
-    //     "iDisplayLength": 10,
-    //   });
-    //   $(document).on('click', '.delete', function () {
-    //         button = $(this);
-    //         $.ajax({
-    //             url: "{% url 'shoppingcart_shoppingcart' %}",
-    //             type: "POST",
-    //             data: {
-    //                 pk: button.parent().data('pk'),
-    //                 action: "delete",
-    //                 csrfmiddlewaretoken: getCookie('csrftoken'),
-    //              },
-    //              success: function (data) {
-    //                  button.parents().eq(2).hide()
-    //              },
-    //        });
-    //    });
-    // });
+    var button;
+    $('.addProduct').on('click', function(){
+        button = $(this);
+        $.ajax({
+            url: "{% url 'shoppingcart_products' %}",
+            type: "POST",
+            data: {
+                pk: $(this).data('pk'),
+                action: "loadShoppingCart",
+                csrfmiddlewaretoken: getCookie('csrftoken'),
+            },
+            success: function (data) {
+                product = $(button.parents().eq(1));
+                stock = $(product.find('#productStock')).html();
+                $('#id_quantity').val('1');
+                $('#id_quantity').attr({'max': stock});
+                $('#imageModal').html($(product.find('img')[0]).clone());
+                $('#nameProduct').html($(product.find('span')).html());
+                $('#stockProduct').html(stock);
+                $('#id_shoppingcart').html(data['shoppingCart']);
+            },
+        });
+    });
+    $('#formShopping').submit(function(){
+        $.ajax({
+            url: "{% url 'shoppingcart_products' %}",
+            type: "POST",
+            data: {
+                name: $('#id_name').val(),
+                action: "addShoppingCart",
+                csrfmiddlewaretoken: getCookie('csrftoken'),
+            },
+            success: function (data) {
+                $('#modalShoppingCart').modal('hide');
+                button.trigger('click');
+            },
+        });
+        return false;
+    });
+    $('#formProduct').submit(function(){
+        data = $(this).serialize() + '&product=' + button.data('pk') + '&action=addProdutToShoppingCart&csrfmiddlewaretoken=' + getCookie('csrftoken');
+        $.ajax({
+            url: "{% url 'shoppingcart_products' %}",
+            type: "POST",
+            data: data,
+            success: function (data) {
+
+                switch ((data['result'])) {
+                    case true:
+                        $('#modalProduct').modal('hide');
+                        alert("Agregado con éxito al carro")
+                        break;
+                    case false:
+                        alert("Intente nuevamente")
+                        break;
+                }
+            },
+        });
+        return false
+    })
 </script>
 {% endblock JavaScript %}

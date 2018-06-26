@@ -1,12 +1,11 @@
 from django.shortcuts import render
 from django.db.models import Q
 from django.http import JsonResponse
-from django.shortcuts import redirect
-from django.http import HttpResponseRedirect
 from django.urls import reverse
-from shoppingcart.models import *
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from shoppingcart.models import ShoppingCart, BuyProduct
+from shoppingcart.forms import FormShoppingCart, FormBuyProduct
 from inventory.models import Product
-from shoppingcart.forms import *
 
 # Create your views here.
 
@@ -145,7 +144,38 @@ def detailCart(request, cart_id):
 
 
 def products(request):
+    if request.POST:
+        if request.POST['action'] == 'loadShoppingCart':
+            htmlShopping = ''
+            for x in ShoppingCart.objects.filter(client=request.user, status=False).values('name', 'pk'):
+                htmlShopping += '<option value="' + str(x['pk']) + '">' + x['name'] + '</option>'
+            return JsonResponse({'shoppingCart': htmlShopping})
+        elif request.POST['action'] == 'addShoppingCart':
+            fomrObj = FormShoppingCart(request.POST)
+            if fomrObj.is_valid():
+                fomrObj = fomrObj.save(commit=False)
+                fomrObj.client = request.user
+                fomrObj.save()
+            return JsonResponse({})
+        elif request.POST['action'] == 'addProdutToShoppingCart':
+            formBuyProduct = FormBuyProduct(request.POST)
+            if formBuyProduct.is_valid():
+                formBuyProduct.save()
+                return JsonResponse({'result': True})
+            return JsonResponse({'result': False})
     data = {}
+    data['formShopping'] = FormShoppingCart()
+    data['formBuy'] = FormBuyProduct()
     template_name = "shoppingcart/products.html"
-    data['products'] = Product.objects.all()
+    productList = Product.objects.filter(status=True,
+                                         delete=False)
+    page = request.GET.get('page', 1)
+    paginator = Paginator(productList, 8)
+    try:
+        data['products'] = paginator.page(page)
+    except PageNotAnInteger:
+        data['products'] = paginator.page(1)
+    except EmptyPage:
+        data['products'] = paginator.page(paginator.num_pages)
+
     return render(request, template_name, data)

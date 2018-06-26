@@ -98,7 +98,7 @@
             <img src="{% get_media_prefix %}{{x.image}}" alt="{{x.name}}" class="centerimage"/>
             <h3>{{x.category.name}}</h3>
             <span class="pull-right">{{x.name}}</span>
-            <div class="offer">Stock: <b id='productStock'>{{x.quantity}}</b></div>
+            <div class="offer">Stock: <b id='productStock'>{{x.quantity}}</b>  -  ${{x.price}}</div>
             <div class="detail col-12">
                 <img src="{% get_media_prefix %}{{x.image}}" alt="{{x.name}}" class="move30 centerimage"/>
                 <button type="button" class="btn btn-info btn-block addProduct" data-pk="{{x.pk}}" data-toggle='modal' data-target='#modalProduct'>Agregar al Carrito</button>

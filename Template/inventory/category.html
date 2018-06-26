@@ -67,7 +67,7 @@
 <script src="{% static 'js/datatable/dataTables.bootstrap4.min.js' %}"></script>
 <script>
     var form;
-    var tableCategory = 
+    var tableCategory =
     $('.table').DataTable({
         "processing": true,
         "serverSide": true,
@@ -192,7 +192,7 @@
         });
     });
     $(document).on('click', '.edit', function () {
-        $('#id_name').val($($(this).parents().eq(3).find('td')[0]).html());
+        $('#id_name').val($($(this).parents().eq(2).find('td')[0]).html());
         form = false;
     });
     $('#addCategory').on('click', function () {
